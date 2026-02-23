@@ -1,4 +1,5 @@
 # syntax=docker/dockerfile:1
+# Build context for this Dockerfile should be repository root: .
 
 FROM node:22-bookworm-slim AS base
 WORKDIR /app

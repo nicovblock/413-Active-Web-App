@@ -2,7 +2,8 @@ import Database from 'better-sqlite3';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const dbPath = process.env.DATABASE_PATH || './data/fitness.db';
+const defaultDbPath = process.env.NODE_ENV === 'production' ? '/tmp/fitness.db' : './data/fitness.db';
+const dbPath = process.env.DATABASE_PATH || defaultDbPath;
 const directory = path.dirname(dbPath);
 if (!fs.existsSync(directory)) fs.mkdirSync(directory, { recursive: true });
 

@@ -66,6 +66,24 @@ gcloud builds submit --config cloudbuild.yaml
 - `CLIENT_ORIGIN`
 - `DATABASE_PATH` (for production, set to a writable mount path such as `/tmp/fitness.db` or a persistent volume)
 
+
+### Dockerfile source location / build context
+- Dockerfile path: `/Dockerfile` (repo root)
+- Docker build context directory: repository root (`.`)
+- Example:
+  ```bash
+  docker build -f Dockerfile -t 413-active .
+  ```
+
+### Is this ready for Google Cloud Run?
+**Yes, for an MVP/demo deployment.**
+- The container listens on `PORT` and Cloud Run can deploy it via `cloudbuild.yaml`.
+- Static frontend is served by the Express server in production.
+
+**Important production caveat:**
+- SQLite on Cloud Run is ephemeral. This project now defaults to `/tmp/fitness.db` in production, which is writable but not persistent across instance lifecycle.
+- For real production durability, migrate data to Cloud SQL (PostgreSQL) or another managed persistent store.
+
 ## Project structure
 - `client/` React app
 - `server/` Express API + Socket.IO + SQLite DB bootstrapping
