@@ -1,0 +1,39 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        if [[ -f Dockerfile ]]; then
+          CONTEXT='.'
+          DOCKERFILE='Dockerfile'
+        elif [[ -f 413-Active-Web-App/Dockerfile ]]; then
+          CONTEXT='413-Active-Web-App'
+          DOCKERFILE='413-Active-Web-App/Dockerfile'
+        else
+          echo 'Dockerfile not found in expected locations: ./Dockerfile or ./413-Active-Web-App/Dockerfile'
+          exit 1
+        fi
+        docker build -f "${DOCKERFILE}" -t "${_IMAGE_URI}" "${CONTEXT}"
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_IMAGE_URI}']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - '${_SERVICE_NAME}'
+      - '--image=${_IMAGE_URI}'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=NODE_ENV=production,PORT=8080'
+substitutions:
+  _SERVICE_NAME: fitness-tracker
+  _REGION: us-central1
+  _IMAGE_URI: 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/fitness-tracker:$COMMIT_SHA'
+images:
+  - '${_IMAGE_URI}'
