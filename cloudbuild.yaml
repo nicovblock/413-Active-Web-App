@@ -1,8 +1,25 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', '${_IMAGE_URI}', '.']
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        set -euo pipefail
+        if [[ -f Dockerfile ]]; then
+          CONTEXT='.'
+          DOCKERFILE='Dockerfile'
+        elif [[ -f 413-Active-Web-App/Dockerfile ]]; then
+          CONTEXT='413-Active-Web-App'
+          DOCKERFILE='413-Active-Web-App/Dockerfile'
+        else
+          echo 'Dockerfile not found in expected locations: ./Dockerfile or ./413-Active-Web-App/Dockerfile'
+          exit 1
+        fi
+        docker build -f "${DOCKERFILE}" -t "${_IMAGE_URI}" "${CONTEXT}"
+
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', '${_IMAGE_URI}']
+
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:

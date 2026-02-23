@@ -61,6 +61,10 @@ This repository now includes Google Cloud deployment assets:
 gcloud builds submit --config cloudbuild.yaml
 ```
 
+> `cloudbuild.yaml` is resilient to either source layout:
+> - `./Dockerfile`
+> - `./413-Active-Web-App/Dockerfile`
+
 ### Required production environment variables
 - `JWT_SECRET`
 - `CLIENT_ORIGIN`
