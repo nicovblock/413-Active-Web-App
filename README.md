@@ -91,3 +91,18 @@ gcloud builds submit --config cloudbuild.yaml
 ## Project structure
 - `client/` React app
 - `server/` Express API + Socket.IO + SQLite DB bootstrapping
+
+
+### If you still see `lstat /workspace/Dockerfile` in Cloud Build
+That log means the trigger is building a commit/branch that does **not** contain this repository's `Dockerfile` (or the trigger is using Dockerfile mode with the wrong path).
+
+Recommended trigger settings:
+1. **Use Cloud Build config file mode** (not Dockerfile mode)
+   - Config type: `Cloud Build configuration file`
+   - Config path: `cloudbuild.yaml`
+2. Ensure the trigger branch points to the branch that contains deployment files (`Dockerfile`, `cloudbuild.yaml`, app sources), not the initial commit only.
+3. If you must use Dockerfile mode, set:
+   - Dockerfile location: `413-Active-Web-App/Dockerfile` (when repo is checked out under a subfolder)
+   - Build context: `413-Active-Web-App`
+
+The failing log you shared (`GitCommit: 3cbf770...`) is the initial repository commit, which does not include the deployment files.
