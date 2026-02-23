@@ -20,6 +20,7 @@ A collaborative, real-time fitness tracker for clients and coaches with role-spe
 - Password hashing via bcrypt
 - Input validation with zod and basic text sanitization
 - Helmet, CORS, and request rate limiting enabled
+- Structured production logging for Google Cloud via `winston` + `@google-cloud/logging-winston`
 - Loading and empty states across key screens
 
 ## Setup
@@ -48,6 +49,22 @@ npm run build
 ```bash
 npm run typecheck
 ```
+
+## Google Cloud deployment
+This repository now includes Google Cloud deployment assets:
+- `Dockerfile` for Cloud Run / App Engine Flex container builds
+- `cloudbuild.yaml` for Cloud Build CI/CD to Cloud Run
+- `app.yaml` for App Engine Flex compatibility
+
+### Cloud Run quick deploy
+```bash
+gcloud builds submit --config cloudbuild.yaml
+```
+
+### Required production environment variables
+- `JWT_SECRET`
+- `CLIENT_ORIGIN`
+- `DATABASE_PATH` (for production, set to a writable mount path such as `/tmp/fitness.db` or a persistent volume)
 
 ## Project structure
 - `client/` React app
